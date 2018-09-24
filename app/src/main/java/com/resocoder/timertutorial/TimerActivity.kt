@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.support.v7.app.AppCompatActivity
+//import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.resocoder.timertutorial.util.NotificationUtil
@@ -14,6 +14,10 @@ import com.resocoder.timertutorial.util.PrefUtil
 import kotlinx.android.synthetic.main.activity_timer.*
 import kotlinx.android.synthetic.main.content_timer.*
 import java.util.*
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+
 
 class TimerActivity : AppCompatActivity() {
 
@@ -23,7 +27,7 @@ class TimerActivity : AppCompatActivity() {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, TimerExpiredReceiver::class.java)
             val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pendingIntent)
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpTime, pendingIntent)
             PrefUtil.setAlarmSetTime(nowSeconds, context)
             return wakeUpTime
         }
@@ -53,9 +57,11 @@ class TimerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_timer)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+//        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar)
         supportActionBar?.setIcon(R.drawable.ic_timer)
-        supportActionBar?.title = "      Timer"
+        supportActionBar?.title = "      Lucid Timer"
 
         fab_start.setOnClickListener{v ->
             startTimer()
@@ -72,6 +78,16 @@ class TimerActivity : AppCompatActivity() {
         fab_stop.setOnClickListener { v ->
             timer.cancel()
             onTimerFinished()
+        }
+
+        // Wake up phone if needed - https://stackoverflow.com/a/31996206/1762493
+        if (intent.hasExtra(TimerExpiredReceiver().WAKE) && intent.extras!!.getBoolean(TimerExpiredReceiver().WAKE)) {
+            this.window.setFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         }
     }
 
@@ -148,7 +164,7 @@ class TimerActivity : AppCompatActivity() {
     private fun startTimer(){
         timerState = TimerState.Running
 
-        timer = object : CountDownTimer(secondsRemaining * 1000, 1000) {
+        timer = object : CountDownTimer(secondsRemaining * 111, 1000) {
             override fun onFinish() = onTimerFinished()
 
             override fun onTick(millisUntilFinished: Long) {
@@ -198,7 +214,7 @@ class TimerActivity : AppCompatActivity() {
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_timer, menu)
         return true
