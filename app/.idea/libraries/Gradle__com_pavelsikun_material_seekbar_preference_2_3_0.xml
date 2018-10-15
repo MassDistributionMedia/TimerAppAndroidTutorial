@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.pavelsikun:material-seekbar-preference-2.3.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/jetified-material-seekbar-preference-2.3.0.aar/4bd83d57406398f90ae7d41bc224f67d/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/jetified-material-seekbar-preference-2.3.0.aar/4bd83d57406398f90ae7d41bc224f67d/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.pavelsikun/material-seekbar-preference/2.3.0/8676908706edaf82476aa8370d800f8add935746/material-seekbar-preference-2.3.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -6,7 +6,6 @@ import android.content.Intent
 import com.resocoder.timertutorial.util.NotificationUtil
 import com.resocoder.timertutorial.util.PrefUtil
 //import android.support.v4.content.ContextCompat.startActivity
-import android.text.format.Time
 
 
 class TimerExpiredReceiver : BroadcastReceiver() {
@@ -19,8 +18,10 @@ class TimerExpiredReceiver : BroadcastReceiver() {
         PrefUtil.setAlarmSetTime(0, context)
 
         val myAct = Intent(context, TimerActivity::class.java)
+//        val myAct = Intent(R.id.next_action)
         myAct.putExtra(WAKE, true)
-        myAct.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        myAct.setAction("next_action")
+        myAct.flags = Intent.FLAG_FROM_BACKGROUND
         context.startActivity(myAct)
     }
 }

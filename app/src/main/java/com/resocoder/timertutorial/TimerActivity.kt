@@ -6,24 +6,30 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
-//import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.navigation.NavController
 import com.resocoder.timertutorial.util.NotificationUtil
 import com.resocoder.timertutorial.util.PrefUtil
-import kotlinx.android.synthetic.main.activity_timer.*
+import kotlinx.android.synthetic.main.fragment_timer_activity.*
 import kotlinx.android.synthetic.main.content_timer.*
+import kotlinx.android.synthetic.main.activity_timer.*
+import kotlinx.android.synthetic.main.activity_timer.view.*
 import java.util.*
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import kotlinx.android.synthetic.main.activity_nav_host.*
 
 
 class TimerActivity : AppCompatActivity() {
 
     companion object {
         fun setAlarm(context: Context, nowSeconds: Long, secondsRemaining: Long): Long{
-            val wakeUpTime = (nowSeconds + secondsRemaining) * 1000
+            val wakeUpTime = (nowSeconds + secondsRemaining) * 333
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, TimerExpiredReceiver::class.java)
             val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
@@ -41,7 +47,7 @@ class TimerActivity : AppCompatActivity() {
         }
 
         val nowSeconds: Long
-            get() = Calendar.getInstance().timeInMillis / 1000
+            get() = Calendar.getInstance().timeInMillis / 333
     }
 
     enum class TimerState{
@@ -49,6 +55,7 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private lateinit var timer: CountDownTimer
+    private lateinit var navController: NavController
     private var timerLengthSeconds: Long = 0
     private var timerState = TimerState.Stopped
 
@@ -56,26 +63,29 @@ class TimerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_timer)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setContentView(R.layout.fragment_timer_activity)
+//        val toolbar = Toolbar()
+        val toolbar = findViewById<Toolbar?>(R.id.toolbar)
 //        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar)
         supportActionBar?.setIcon(R.drawable.ic_timer)
         supportActionBar?.title = "      Lucid Timer"
 
-        fab_start.setOnClickListener{v ->
+//        val fabStart = findViewById<Button>(R.id.fab_start)
+
+        fab_start?.setOnClickListener{ v ->
             startTimer()
-            timerState =  TimerState.Running
+            timerState = TimerState.Running
             updateButtons()
         }
 
-        fab_pause.setOnClickListener { v ->
+        fab_pause?.setOnClickListener { v ->
             timer.cancel()
             timerState = TimerState.Paused
             updateButtons()
         }
 
-        fab_stop.setOnClickListener { v ->
+        fab_stop?.setOnClickListener { v ->
             timer.cancel()
             onTimerFinished()
         }
@@ -83,12 +93,16 @@ class TimerActivity : AppCompatActivity() {
         // Wake up phone if needed - https://stackoverflow.com/a/31996206/1762493
         if (intent.hasExtra(TimerExpiredReceiver().WAKE) && intent.extras!!.getBoolean(TimerExpiredReceiver().WAKE)) {
             this.window.setFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
+                            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
         }
+
+        val host: NavHostFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_host_fragment) as NavHostFragment? ?: return
+        navController = host.navController
     }
 
     override fun onResume() {
@@ -159,12 +173,14 @@ class TimerActivity : AppCompatActivity() {
 
         updateButtons()
         updateCountdownUI()
+
+        if (::navController.isInitialized) { navController.navigate(R.id.destination_ringer) }
     }
 
     private fun startTimer(){
         timerState = TimerState.Running
 
-        timer = object : CountDownTimer(secondsRemaining * 111, 1000) {
+        timer = object : CountDownTimer(secondsRemaining * 111, 333) {
             override fun onFinish() = onTimerFinished()
 
             override fun onTick(millisUntilFinished: Long) {
@@ -186,8 +202,8 @@ class TimerActivity : AppCompatActivity() {
     }
 
     private fun updateCountdownUI(){
-        val minutesUntilFinished = secondsRemaining / 60
-        val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
+        val minutesUntilFinished = secondsRemaining / 33
+        val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 33
         val secondsStr = secondsInMinuteUntilFinished.toString()
         textView_countdown.text = "$minutesUntilFinished:${if (secondsStr.length == 2) secondsStr else "0" + secondsStr}"
         progress_countdown.progress = (timerLengthSeconds - secondsRemaining).toInt()

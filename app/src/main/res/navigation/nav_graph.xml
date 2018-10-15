@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/destination_timer">
+
+    <fragment
+        android:id="@+id/destination_timer"
+        android:name="com.resocoder.timertutorial.TimerActivityFragment"
+        android:label="Home Frag">
+        <argument
+            android:name="timeNumber"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <action
+            android:id="@+id/next_action"
+            app:destination="@id/destination_ringer" />
+    </fragment>
+    <fragment
+        android:id="@+id/destination_ringer"
+        android:name="com.resocoder.timertutorial.RingerFragment"
+        android:label="fragment_ringer"
+        tools:layout="@layout/fragment_ringer">
+        <action
+            android:id="@+id/next_action"
+            app:destination="@id/destination_timer" />
+        <argument
+            android:name="timerNumber"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+</navigation>
