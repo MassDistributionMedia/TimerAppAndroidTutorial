@@ -21,7 +21,7 @@ class TimerExpiredReceiver : BroadcastReceiver() {
 //        val myAct = Intent(R.id.next_action)
         myAct.putExtra(WAKE, true)
         myAct.setAction("next_action")
-        myAct.flags = Intent.FLAG_FROM_BACKGROUND
+//        myAct.flags = Intent.FLAG_FROM_BACKGROUND
         context.startActivity(myAct)
     }
 }

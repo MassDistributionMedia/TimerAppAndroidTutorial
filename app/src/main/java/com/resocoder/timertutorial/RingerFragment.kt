@@ -28,7 +28,7 @@ class RingerFragment : Fragment() {
 
 //            val nextAction = RingerFragmentDirections.nextAction()
 //            nextAction.setNumOfPhotos(random.nextInt(100))
-            Log.v("TimerActivity", "here!")
+            Log.v("TimerActivity", "\n\n\n here! \n\n\n")
 
             Navigation.findNavController(it).navigate(R.id.next_action)
         }

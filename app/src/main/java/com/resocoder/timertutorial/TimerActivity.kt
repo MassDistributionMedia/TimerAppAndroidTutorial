@@ -23,6 +23,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import kotlinx.android.synthetic.main.activity_nav_host.*
+import kotlin.properties.Delegates
 
 
 class TimerActivity : AppCompatActivity() {
@@ -63,8 +64,13 @@ class TimerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_timer)
+
+        val host: NavHostFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_host_fragment) as NavHostFragment? ?: return
+        navController = host.navController
+
         setContentView(R.layout.fragment_timer_activity)
-//        val toolbar = Toolbar()
         val toolbar = findViewById<Toolbar?>(R.id.toolbar)
 //        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar)
@@ -98,11 +104,9 @@ class TimerActivity : AppCompatActivity() {
                     WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
                             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
                             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
+            if (::navController.isInitialized) { navController.navigate(R.id.next_action) }
+            setContentView(R.layout.fragment_ringer)
         }
-
-        val host: NavHostFragment = supportFragmentManager
-                .findFragmentById(R.id.nav_host_fragment) as NavHostFragment? ?: return
-        navController = host.navController
     }
 
     override fun onResume() {
@@ -174,7 +178,8 @@ class TimerActivity : AppCompatActivity() {
         updateButtons()
         updateCountdownUI()
 
-        if (::navController.isInitialized) { navController.navigate(R.id.destination_ringer) }
+        if (::navController.isInitialized) { navController.navigate(R.id.next_action) }
+        setContentView(R.layout.fragment_ringer)
     }
 
     private fun startTimer(){
@@ -193,7 +198,7 @@ class TimerActivity : AppCompatActivity() {
     private fun setNewTimerLength(){
         val lengthInMinutes = PrefUtil.getTimerLength(this)
         timerLengthSeconds = (lengthInMinutes * 60L)
-        progress_countdown.max = timerLengthSeconds.toInt()
+        progress_countdown?.max = timerLengthSeconds.toInt()
     }
 
     private fun setPreviousTimerLength(){
@@ -205,8 +210,8 @@ class TimerActivity : AppCompatActivity() {
         val minutesUntilFinished = secondsRemaining / 33
         val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 33
         val secondsStr = secondsInMinuteUntilFinished.toString()
-        textView_countdown.text = "$minutesUntilFinished:${if (secondsStr.length == 2) secondsStr else "0" + secondsStr}"
-        progress_countdown.progress = (timerLengthSeconds - secondsRemaining).toInt()
+        textView_countdown?.text = "$minutesUntilFinished:${if (secondsStr.length == 2) secondsStr else "0" + secondsStr}"
+        progress_countdown?.progress = (timerLengthSeconds - secondsRemaining).toInt()
     }
 
     private fun updateButtons(){
